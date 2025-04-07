@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicio de Saludos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #6a4caf;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #61428a;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-left: 3px solid #6a4caf;
+            background-color: #f9f9f9;
+            display: none;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Servicio de Saludos</h1>
+    
+    <div class="container">
+        <div class="form-group">
+            <label for="nameInput">Nombre:</label>
+            <input type="text" id="nameInput" placeholder="Ingrese un nombre">
+        </div>
+        
+        <button onclick="getGreeting()">Obtener saludo</button>
+        
+        <div id="result"></div>
+        <div id="error" class="error"></div>
+    </div>
+
+    <script>
+        function getGreeting() {
+            const name = document.getElementById('nameInput').value;
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            
+            // Limpiar mensajes anteriores
+            resultDiv.style.display = 'none';
+            errorDiv.textContent = '';
+            
+            // Construir la URL con el parámetro name
+            let url = 'http://localhost:8080/greeting';
+            if (name) {
+                url += '?name=' + encodeURIComponent(name);
+            }
+            
+            // Realizar la petición al servicio
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Mostrar el resultado
+                    resultDiv.innerHTML = `
+                        <h3>Respuesta del Servidor:</h3>
+                        <p>${data.content}</p>
+                    `;
+                    resultDiv.style.display = 'block';
+                })
+                .catch(error => {
+                    // Mostrar error
+                    errorDiv.textContent = 'Error: ' + error.message;
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>
